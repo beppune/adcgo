@@ -3,7 +3,6 @@ package main
 import (
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -39,11 +38,11 @@ func (req *AdcRequest) Prepare(rawurl string) *AdcRequest {
 }
 
 func PrepareBody(s, bodyfile string) io.Reader {
-	b, err := ioutil.ReadFile(bodyfile)
+	b, err := os.ReadFile(bodyfile)
 	panic_if_error(err)
 
 	b = append(b, s...)
-	ioutil.WriteFile("temp.txt", b, fs.ModeAppend)
+	os.WriteFile("temp.txt", b, fs.ModeAppend)
 
 	f, err := os.Open("temp.txt")
 	panic_if_error(err)
