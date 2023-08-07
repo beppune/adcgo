@@ -1,11 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 type AdcRequest http.Request
@@ -37,15 +38,15 @@ func (req *AdcRequest) Prepare(rawurl string) *AdcRequest {
 	return req
 }
 
-func (req *AdcRequest) SetDate(date string, reader io.Reader) *AdcRequest {
-
-	buffer, err := ioutil.ReadAll(reader)
+func PrepareBody(s, bodyfile string) io.Reader {
+	b, err := ioutil.ReadFile(bodyfile)
 	panic_if_error(err)
 
-	//date 07%2F08%2F2023
-	buffer = append(buffer, `07%2F08%2F2023`...)
+	b = append(b, s...)
+	ioutil.WriteFile("temp.txt", b, fs.ModeAppend)
 
-	req.Body = ioutil.NopCloser(bytes.NewBuffer(buffer))
+	f, err := os.Open("temp.txt")
+	panic_if_error(err)
 
-	return req
+	return f
 }
