@@ -17,8 +17,8 @@ func MakeFakeRequest() io.Reader {
 
 func TestMakeFakeRequest(t *testing.T) {
 
-	table := ParseTable(MakeFakeRequest())
+	table, rowcount := ParseTable(MakeFakeRequest())
 
-	fmt.Println(table)
+	fmt.Println(len(table), rowcount)
 
 }

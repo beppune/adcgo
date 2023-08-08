@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -53,17 +53,22 @@ func PrepareBody(s, bodyfile string) io.Reader {
 	return f
 }
 
-func ParseTable(r io.Reader) string {
+func ParseTable(r io.Reader) ([][]string, int) {
 	d, _ := goquery.NewDocumentFromReader(r)
 
 	records := d.Find("#ADC_ContenutoSpecificoPagina_gvGiornaliero tr")
-	records.Each(func(i int, s *goquery.Selection) {
-		fmt.Printf("|")
-		s.Find("td span").Each(func(i int, s *goquery.Selection) {
-			fmt.Printf("%v |", s.Text())
-		})
-		fmt.Println()
-	})
 
-	return ""
+	numcols := records.Find("th").Length()
+	cols := make([][]string, numcols)
+
+	cells := records.Find("tr td")
+	cellcount := cells.Length()
+
+	for i := 0; i < cellcount; i++ {
+		//fmt.Printf("Col num: %v, data: %v\n", i%numcols, strings.TrimSpace(cells.Slice(i, i+1).Text()))
+		ar := &cols[i%numcols]
+		*ar = append(*ar, strings.TrimSpace(cells.Slice(i, i+1).Text()))
+	}
+
+	return cols, cellcount / numcols
 }
