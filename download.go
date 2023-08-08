@@ -49,11 +49,3 @@ func PrepareBody(s, bodyfile string) io.Reader {
 
 	return f
 }
-
-func (r *AdcRequest) MakeFakeRequest() io.Reader {
-
-	f, _ := os.OpenFile("example.html", os.O_RDONLY, 0644)
-
-	return f
-
-}
