@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/xuri/excelize/v2"
 )
 
 type AdcRequest http.Request
@@ -67,8 +68,31 @@ func ParseTable(r io.Reader) ([][]string, int) {
 	for i := 0; i < cellcount; i++ {
 		//fmt.Printf("Col num: %v, data: %v\n", i%numcols, strings.TrimSpace(cells.Slice(i, i+1).Text()))
 		ar := &cols[i%numcols]
-		*ar = append(*ar, strings.TrimSpace(cells.Slice(i, i+1).Text()))
+		*ar = append(*ar, cells.Slice(i, i+1).Text())
 	}
 
 	return cols, cellcount / numcols
+}
+
+func ProduceExcel(templatefile string, records [][]string, newfilename string) {
+	file, err := excelize.OpenFile(templatefile, excelize.Options{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	sheet := file.GetSheetName(0)
+
+	for col := 0; col < len(records); col++ {
+
+		ar := records[col]
+
+		for row := 0; row < len(ar); row++ {
+
+			cell, _ := excelize.CoordinatesToCellName(col, row)
+			file.SetCellValue(sheet, cell, strings.TrimSpace(ar[row]))
+
+		}
+	}
+
+	file.SaveAs(newfilename)
 }

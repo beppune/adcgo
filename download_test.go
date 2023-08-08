@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"testing"
@@ -15,10 +14,18 @@ func MakeFakeRequest() io.Reader {
 
 }
 
-func TestMakeFakeRequest(t *testing.T) {
+/*func TestMakeFakeRequest(t *testing.T) {
 
 	table, rowcount := ParseTable(MakeFakeRequest())
 
 	fmt.Println(len(table), rowcount)
+
+}*/
+
+func TestExcel(t *testing.T) {
+
+	table, _ := ParseTable(MakeFakeRequest())
+
+	ProduceExcel("report_template.xlsx", table, "newfile.xlsx")
 
 }
