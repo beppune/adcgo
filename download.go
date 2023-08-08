@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
 	"net/url"
 	"os"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 type AdcRequest http.Request
@@ -48,4 +51,19 @@ func PrepareBody(s, bodyfile string) io.Reader {
 	panic_if_error(err)
 
 	return f
+}
+
+func ParseTable(r io.Reader) string {
+	d, _ := goquery.NewDocumentFromReader(r)
+
+	records := d.Find("#ADC_ContenutoSpecificoPagina_gvGiornaliero tr")
+	records.Each(func(i int, s *goquery.Selection) {
+		fmt.Printf("|")
+		s.Find("td span").Each(func(i int, s *goquery.Selection) {
+			fmt.Printf("%v |", s.Text())
+		})
+		fmt.Println()
+	})
+
+	return ""
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"testing"
@@ -15,5 +16,9 @@ func MakeFakeRequest() io.Reader {
 }
 
 func TestMakeFakeRequest(t *testing.T) {
+
+	table := ParseTable(MakeFakeRequest())
+
+	fmt.Println(table)
 
 }
