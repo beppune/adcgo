@@ -1,1 +1,4 @@
-salutation: hello
+report:
+  dailyurl: http://10.194.137.36/ACCESSIDC/ReportGiornaliero.aspx
+  dailytemplate: report_template.xlsx
+  bodyfile: body.txt

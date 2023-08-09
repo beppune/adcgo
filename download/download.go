@@ -1,6 +1,7 @@
-package main
+package download
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
@@ -20,11 +21,8 @@ func panic_if_error(err error) {
 	}
 }
 
-func (req *AdcRequest) Prepare(rawurl string) *AdcRequest {
+func Prepare(r *http.Request, rawurl string) {
 	u, err := url.Parse(rawurl)
-	panic_if_error(err)
-
-	r, err := http.NewRequest("POST", rawurl, nil)
 	panic_if_error(err)
 
 	r.Header.Add("Accept", `text/html`)
@@ -33,12 +31,12 @@ func (req *AdcRequest) Prepare(rawurl string) *AdcRequest {
 	r.Header.Add("Connection", `keep-alive`)
 	r.Header.Add("Content-Type", `application/x-www-form-urlencoded`)
 	r.Header.Add("DNT", `1`)
-	r.Header.Add("Origin", u.Hostname())
+	r.Header.Add("Origin", u.Scheme+"://"+u.Hostname())
+	r.Header.Add("Host", u.Hostname())
 	r.Header.Add("Referer", rawurl)
 	r.Header.Add("Upgrade-Insecure-Request", `1`)
 	r.Header.Add("User-Agent", `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36`)
 
-	return req
 }
 
 func PrepareBody(s, bodyfile string) io.Reader {
@@ -62,7 +60,7 @@ func ParseTable(r io.Reader) ([][]string, int) {
 	numcols := records.Find("th").Length()
 	cols := make([][]string, numcols)
 
-	cells := records.Find("tr td")
+	cells := records.Find("td")
 	cellcount := cells.Length()
 
 	for i := 0; i < cellcount; i++ {
@@ -82,16 +80,21 @@ func ProduceExcel(templatefile string, records [][]string, newfilename string) {
 
 	sheet := file.GetSheetName(0)
 
-	for col := 0; col < len(records); col++ {
+	numrows := len(records)
 
-		ar := records[col]
+	fmt.Println(records[0])
 
-		for row := 0; row < len(ar); row++ {
+	for row := 0; row < numrows; row++ {
 
-			cell, _ := excelize.CoordinatesToCellName(col, row)
-			file.SetCellValue(sheet, cell, strings.TrimSpace(ar[row]))
+		ar := records[row]
 
+		numcols := len(ar)
+
+		for col := 0; col < numcols; col++ {
+			cell, _ := excelize.CoordinatesToCellName(col+2, row, true) //shift cols in order to not overwrite headers
+			file.SetCellValue(sheet, cell, strings.TrimSpace(ar[col]))
 		}
+
 	}
 
 	file.SaveAs(newfilename)
