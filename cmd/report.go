@@ -117,8 +117,7 @@ func init() {
 	reportCmd.PersistentFlags().String("bodyfile", "body.txt", "Request body template")
 	viper.BindPFlag("report.bodyfile", reportCmd.PersistentFlags().Lookup("bodyfile"))
 
-	reportCmd.PersistentFlags().String("format", `ReportGiornaliero_TO1__%s_%s.xls`, "filename format for new export. Accept time.Format semantics")
-	viper.BindPFlag("report.format", reportCmd.PersistentFlags().Lookup("format"))
+	viper.Set("report.format", `ReportGiornaliero_TO1__%s_%s.xlsx`)
 
 	reportCmd.PersistentFlags().Bool("noclean", false, "Do not clean temporary files")
 	viper.BindPFlag("report.noclean", reportCmd.PersistentFlags().Lookup("noclean"))
