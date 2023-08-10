@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/beppune/adcgo/download"
@@ -27,8 +28,12 @@ var reportCmd = &cobra.Command{
 		date := viper.GetString("date")
 		t, _ := time.Parse(`2006-01-02`, date)
 		date = t.Format(`02 01 2006`)
+		reportname := viper.GetString("report.format")
+		reportname = fmt.Sprintf(reportname, t.Format(`02_01_2006`), time.Now().Format(`02012006030405`))
 
-		fmt.Println(date)
+		noclean := viper.GetBool("report.noclean")
+
+		fmt.Println(reportname)
 
 		if rawurl == "" {
 			panic("dailyurl required")
@@ -62,8 +67,11 @@ var reportCmd = &cobra.Command{
 
 		records, _ := download.ParseTable(res.Body)
 
-		download.ProduceExcel("report_template.xlsx", records, "newfile.xlsx")
+		download.ProduceExcel("report_template.xlsx", records, reportname)
 
+		if !noclean {
+			os.Remove("temp.txt")
+		}
 	},
 }
 
@@ -78,6 +86,12 @@ func init() {
 
 	reportCmd.PersistentFlags().String("bodyfile", "body.txt", "Request body template")
 	viper.BindPFlag("report.bodyfile", reportCmd.PersistentFlags().Lookup("bodyfile"))
+
+	reportCmd.PersistentFlags().String("format", `ReportGiornaliero_TO1__%s_%s.xls`, "filename format for new export. Accept time.Format semantics")
+	viper.BindPFlag("report.format", reportCmd.PersistentFlags().Lookup("format"))
+
+	reportCmd.PersistentFlags().Bool("noclean", false, "Clean temporary files")
+	viper.BindPFlag("report.noclean", reportCmd.PersistentFlags().Lookup("noclean"))
 
 	today := time.Now().Format("2006-01-02")
 	reportCmd.PersistentFlags().String("date", today, "Report date (default today)")

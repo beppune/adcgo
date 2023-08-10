@@ -124,16 +124,11 @@ func ProduceExcel(templatefile string, records [][]string, newfilename string) {
 
 	sheet := file.GetSheetName(0)
 
-	//numrows := len(records)
-
-	//fmt.Println(records[0])
-
 	for row, list := range records {
 
 		for col, value := range list {
 
 			cell, _ := excelize.CoordinatesToCellName(col+2, headers[row]+1, true) //shift cols in order to not overwrite headers
-			file.SetCellValue(sheet, cell, strings.TrimSpace(value))
 
 			if row == 19 {
 				value = "VERO"
@@ -143,19 +138,6 @@ func ProduceExcel(templatefile string, records [][]string, newfilename string) {
 		}
 
 	}
-
-	/*for row := 0; row < numrows; row++ {
-
-		ar := &records[row]
-		fmt.Println((*ar)[row])
-
-		numcols := len(*ar)
-
-		for col := 0; col < numcols; col++ {
-			cell, _ := excelize.CoordinatesToCellName(col+2, headers[row], true) //shift cols in order to not overwrite headers
-			file.SetCellValue(sheet, cell, strings.TrimSpace((*ar)[col]))
-		}
-	}*/
 
 	file.SaveAs(newfilename)
 }
