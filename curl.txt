@@ -1,7 +1,6 @@
 curl 'http://10.194.137.36/ACCESSIDC/ReportGiornaliero.aspx' \
   -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
   -H 'Accept-Language: it-IT,it;q=0.9' \
-  -H 'Authorization: Basic cmV0ZVxtYW56b2dpOToxS3J1bTFyMQ==' \
   -H 'Cache-Control: max-age=0' \
   -H 'Connection: keep-alive' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
