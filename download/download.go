@@ -1,7 +1,6 @@
 package download
 
 import (
-	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
@@ -12,8 +11,6 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/xuri/excelize/v2"
 )
-
-type AdcRequest http.Request
 
 func panic_if_error(err error) {
 	if err != nil {
@@ -78,24 +75,87 @@ func ProduceExcel(templatefile string, records [][]string, newfilename string) {
 		panic(err.Error())
 	}
 
+	headers := map[int]int{
+		//lastname
+		0: 0,
+		//firstname
+		1: 1,
+		//nationality
+		2: 15,
+		//birthdate
+		3: 14,
+		//CF
+		4: 13,
+		//doctype
+		5: 3,
+		//docnum
+		6: 4,
+		//docexpires
+		7: 5,
+		//tel
+		8: 17,
+		//badgept
+		9: 18,
+		//badgeto
+		10: 19,
+		//firm
+		11: 2,
+		//dep
+		12: 11,
+		//dc
+		13: 20,
+		//profile
+		14: 12,
+		//locales
+		15: 21,
+		//from
+		16: 6,
+		//to
+		17: 7,
+		//remarks
+		18: 10,
+		//istemporary
+		19: 16,
+		//badgekaba
+		20: 8,
+		//groupkaba
+		21: 9,
+	}
+
 	sheet := file.GetSheetName(0)
 
-	numrows := len(records)
+	//numrows := len(records)
 
-	fmt.Println(records[0])
+	//fmt.Println(records[0])
 
-	for row := 0; row < numrows; row++ {
+	for row, list := range records {
 
-		ar := records[row]
+		for col, value := range list {
 
-		numcols := len(ar)
+			cell, _ := excelize.CoordinatesToCellName(col+2, headers[row]+1, true) //shift cols in order to not overwrite headers
+			file.SetCellValue(sheet, cell, strings.TrimSpace(value))
 
-		for col := 0; col < numcols; col++ {
-			cell, _ := excelize.CoordinatesToCellName(col+2, row, true) //shift cols in order to not overwrite headers
-			file.SetCellValue(sheet, cell, strings.TrimSpace(ar[col]))
+			if row == 19 {
+				value = "VERO"
+			}
+
+			file.SetCellValue(sheet, cell, strings.TrimSpace(value))
 		}
 
 	}
+
+	/*for row := 0; row < numrows; row++ {
+
+		ar := &records[row]
+		fmt.Println((*ar)[row])
+
+		numcols := len(*ar)
+
+		for col := 0; col < numcols; col++ {
+			cell, _ := excelize.CoordinatesToCellName(col+2, headers[row], true) //shift cols in order to not overwrite headers
+			file.SetCellValue(sheet, cell, strings.TrimSpace((*ar)[col]))
+		}
+	}*/
 
 	file.SaveAs(newfilename)
 }
