@@ -4,15 +4,39 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bufio"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
+	"syscall"
 	"time"
 
 	"github.com/beppune/adcgo/download"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/term"
 )
+
+func credentials() (string, string, error) {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter Username: ")
+	username, err := reader.ReadString('\n')
+	if err != nil {
+		return "", "", err
+	}
+
+	fmt.Print("Enter Password: ")
+	bytePassword, err := term.ReadPassword(int(syscall.Stdin))
+	if err != nil {
+		return "", "", err
+	}
+
+	password := string(bytePassword)
+	return strings.TrimSpace(username), strings.TrimSpace(password), nil
+}
 
 // reportCmd represents the report command
 var reportCmd = &cobra.Command{
@@ -33,7 +57,13 @@ var reportCmd = &cobra.Command{
 
 		noclean := viper.GetBool("report.noclean")
 
-		fmt.Println(reportname)
+		username, password, err := credentials()
+		if err != nil {
+			panic(err.Error())
+		}
+
+		username = `rete\` + username
+		token := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
 
 		if rawurl == "" {
 			panic("dailyurl required")
@@ -52,7 +82,7 @@ var reportCmd = &cobra.Command{
 
 		download.Prepare(request, rawurl)
 
-		request.Header.Add("Authorization", "Basic cmV0ZVxtYW56b2dpOToxS3J1bTFyMQ==")
+		request.Header.Add("Authorization", "Basic "+token)
 		request.Header.Add("Coockie", `ASP.NET_SessionId=jkdouw23z3q1itn0hu0mhs03`)
 
 		client := &http.Client{}

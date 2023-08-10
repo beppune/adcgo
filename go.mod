@@ -7,6 +7,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	github.com/xuri/excelize/v2 v2.7.1
+	golang.org/x/term v0.11.0
 )
 
 require (
