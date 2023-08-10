@@ -1,6 +1,7 @@
 package download
 
 import (
+	"bytes"
 	"io"
 	"io/fs"
 	"net/http"
@@ -36,9 +37,8 @@ func Prepare(r *http.Request, rawurl string) {
 
 }
 
-func PrepareBody(s, bodyfile string) io.Reader {
-	b, err := os.ReadFile(bodyfile)
-	panic_if_error(err)
+func PrepareBody(s string, body []byte) io.Reader {
+	b, err := io.ReadAll(bytes.NewBuffer(body))
 
 	b = append(b, s...)
 	os.WriteFile("temp.txt", b, fs.ModeAppend)
@@ -69,8 +69,8 @@ func ParseTable(r io.Reader) ([][]string, int) {
 	return cols, cellcount / numcols
 }
 
-func ProduceExcel(templatefile string, records [][]string, newfilename string) {
-	file, err := excelize.OpenFile(templatefile, excelize.Options{})
+func ProduceExcel(templatefile io.Reader, records [][]string, newfilename string) {
+	file, err := excelize.OpenReader(templatefile, excelize.Options{})
 	if err != nil {
 		panic(err.Error())
 	}

@@ -13,11 +13,19 @@ import (
 	"syscall"
 	"time"
 
+	"embed"
+
 	"github.com/beppune/adcgo/download"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
 )
+
+//go:embed body.txt
+var bodycontent embed.FS
+
+//go:embed report_template.xlsx
+var xlstemplate embed.FS
 
 func credentials() (string, string, error) {
 	reader := bufio.NewReader(os.Stdin)
@@ -47,8 +55,6 @@ var reportCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		rawurl := viper.GetString("report.dailyurl")
-		template := viper.GetString("report.dailytemplate")
-		bodyfile := viper.GetString("report.bodyfile")
 		date := viper.GetString("date")
 		t, _ := time.Parse(`2006-01-02`, date)
 		date = t.Format(`02 01 2006`)
@@ -69,11 +75,8 @@ var reportCmd = &cobra.Command{
 			panic("dailyurl required")
 		}
 
-		if template == "" {
-			panic("template required")
-		}
-
-		body := download.PrepareBody(date, bodyfile)
+		data, _ := bodycontent.ReadFile("body.txt")
+		body := download.PrepareBody(date, data)
 
 		request, err := http.NewRequest("POST", rawurl, body)
 		if err != nil {
@@ -92,12 +95,11 @@ var reportCmd = &cobra.Command{
 			panic(err.Error())
 		}
 
-		//b, _ := io.ReadAll(res.Body)
-		//os.WriteFile("res.dump.txt", b, 0644)
-
 		records, _ := download.ParseTable(res.Body)
 
-		download.ProduceExcel("report_template.xlsx", records, reportname)
+		template, _ := xlstemplate.Open("report_template.xlsx")
+
+		download.ProduceExcel(template, records, reportname)
 
 		if !noclean {
 			os.Remove("temp.txt")
@@ -110,12 +112,6 @@ func init() {
 
 	reportCmd.PersistentFlags().String("dailyurl", "", "Daily report url")
 	viper.BindPFlag("report.dailyurl", reportCmd.PersistentFlags().Lookup("dailyurl"))
-
-	reportCmd.PersistentFlags().String("dailytemplate", "", "Daily report xlsx file")
-	viper.BindPFlag("report.dailytemplate", reportCmd.PersistentFlags().Lookup("dailytemplate"))
-
-	reportCmd.PersistentFlags().String("bodyfile", "body.txt", "Request body template")
-	viper.BindPFlag("report.bodyfile", reportCmd.PersistentFlags().Lookup("bodyfile"))
 
 	viper.Set("report.format", `ReportGiornaliero_TO1__%s_%s.xlsx`)
 
