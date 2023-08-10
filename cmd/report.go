@@ -90,7 +90,7 @@ func init() {
 	reportCmd.PersistentFlags().String("format", `ReportGiornaliero_TO1__%s_%s.xls`, "filename format for new export. Accept time.Format semantics")
 	viper.BindPFlag("report.format", reportCmd.PersistentFlags().Lookup("format"))
 
-	reportCmd.PersistentFlags().Bool("noclean", false, "Clean temporary files")
+	reportCmd.PersistentFlags().Bool("noclean", false, "Do not clean temporary files")
 	viper.BindPFlag("report.noclean", reportCmd.PersistentFlags().Lookup("noclean"))
 
 	today := time.Now().Format("2006-01-02")
