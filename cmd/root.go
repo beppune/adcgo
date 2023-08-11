@@ -36,6 +36,9 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is .adcgo.yml)")
 
+	rootCmd.PersistentFlags().String("excel-path", `C:/Program Files/Microsoft Office/root/Office16/excel.exe`, "Fullpath to excel binary")
+	viper.BindPFlag("excel-path", rootCmd.PersistentFlags().Lookup("excel-path"))
+
 }
 
 func loadConfig() {

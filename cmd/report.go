@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 	"syscall"
 	"time"
@@ -104,6 +105,15 @@ var reportCmd = &cobra.Command{
 		if !noclean {
 			os.Remove("temp.txt")
 		}
+
+		if d, _ := cmd.PersistentFlags().GetBool("open"); d {
+			excelPath := viper.GetString("excel-path")
+			c := exec.Command(excelPath, reportname)
+			err = c.Start()
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+		}
 	},
 }
 
@@ -117,6 +127,8 @@ func init() {
 
 	reportCmd.PersistentFlags().Bool("noclean", false, "Do not clean temporary files")
 	viper.BindPFlag("report.noclean", reportCmd.PersistentFlags().Lookup("noclean"))
+
+	reportCmd.PersistentFlags().Bool("open", false, "Open generated report into excel")
 
 	today := time.Now().Format("2006-01-02")
 	reportCmd.PersistentFlags().String("date", today, "Report date (default today)")
