@@ -1,4 +1,4 @@
 excel-path: C:/Program Files/Microsoft Office/root/Office16/excel.exe
 report:
   dailyurl: http://10.194.137.36/ACCESSIDC/ReportGiornaliero.aspx
-  noclean: false
+  noclean: true
