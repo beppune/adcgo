@@ -56,7 +56,7 @@ var reportCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		rawurl := viper.GetString("report.dailyurl")
-		date := viper.GetString("date")
+		date, _ := cmd.PersistentFlags().GetString("date")
 		t, _ := time.Parse(`2006-01-02`, date)
 		date = t.Format(`02 01 2006`)
 		reportname := viper.GetString("report.format")
@@ -120,7 +120,7 @@ var reportCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(reportCmd)
 
-	reportCmd.PersistentFlags().String("dailyurl", "", "Daily report url")
+	reportCmd.PersistentFlags().String("dailyurl", "http://10.194.137.36/ACCESSIDC/ReportGiornaliero.aspx", "Daily report url")
 	viper.BindPFlag("report.dailyurl", reportCmd.PersistentFlags().Lookup("dailyurl"))
 
 	viper.Set("report.format", `ReportGiornaliero_TO1__%s_%s.xlsx`)
@@ -132,5 +132,4 @@ func init() {
 
 	today := time.Now().Format("2006-01-02")
 	reportCmd.PersistentFlags().String("date", today, "Report date (default today)")
-	viper.BindPFlag("date", reportCmd.PersistentFlags().Lookup("date"))
 }
