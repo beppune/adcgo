@@ -58,26 +58,33 @@ var kabaCmd = &cobra.Command{
 		defer fs.Umount()
 
 		path := root + "\\" + year + "\\" + month + "\\Allarmi\\" + date + month + "_ALL.xlsx"
-		f, err := fs.Open(path)
-		if err != nil {
-			panic(err)
-		}
 
-		b, err := io.ReadAll(f)
-		if err != nil {
-			panic(err)
-		}
+		downloadFile(fs, path, date+month+"_ALL.xlsx")
 
-		of := date + month + "_ALL.xlsx"
+		path = root + "\\" + year + "\\" + month + "\\Passaggi\\" + date + month + ".xlsx"
 
-		err = os.WriteFile(of, b, 0644)
-		if err != nil {
-			fmt.Println(err.Error())
-		}
+		downloadFile(fs, path, date+month+".xlsx")
 	},
 }
 
 var year string
+
+func downloadFile(fs *smb2.Share, path string, output string) {
+	f, err := fs.Open(path)
+	if err != nil {
+		panic(err)
+	}
+
+	b, err := io.ReadAll(f)
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.WriteFile(output, b, 0644)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+}
 
 func init() {
 	rootCmd.AddCommand(kabaCmd)
