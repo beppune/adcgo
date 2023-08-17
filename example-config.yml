@@ -2,3 +2,7 @@ excel-path: C:/Program Files/Microsoft Office/root/Office16/excel.exe
 report:
   dailyurl: http://10.194.137.36/ACCESSIDC/ReportGiornaliero.aspx
   noclean: true
+kaba:
+  server: rto1y11c013
+  sharename: Dati
+  root: DC\\REPORT\\Export\\Exos

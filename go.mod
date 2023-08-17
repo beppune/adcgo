@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
+	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	github.com/xuri/excelize/v2 v2.7.1
@@ -13,6 +14,7 @@ require (
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/geoffgarside/ber v1.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
