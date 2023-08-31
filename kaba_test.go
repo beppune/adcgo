@@ -12,7 +12,7 @@ func TestReportParser(t *testing.T) {
 
 	in := make(chan *kaba.KabaEntry)
 
-	file, err := excelize.OpenFile("2908_ALL.xlsx")
+	file, err := excelize.OpenFile("testutils/2908_ALL.xlsx")
 	if err != nil {
 		panic(err)
 	}
